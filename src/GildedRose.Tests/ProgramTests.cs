@@ -10,62 +10,78 @@ namespace GildedRose.Tests
   [TestFixture]
   class ProgramTests
   {
-    protected Program _program;
-
     [SetUp]
-    public void SetUp()
-    {
-      _program = new Program();
-    }
+    public virtual void SetUp() { }
 
     protected class UpdateQualityTests : ProgramTests
     {
-      
-      [Test]
-      public void TestExpiredItemDegradesTwiceAsFast()
+      private Item _item;
+
+      protected class TestNonExpiredItems : UpdateQualityTests
       {
-        var item = new Item { SellIn = -1, Quality = 2 };
-        When_UpdateQuality(item);
-        Then_Quality_should_be(0, item);
+        [SetUp]
+        public override void SetUp()
+        {
+          base.SetUp();
+          _item = new Item { SellIn = 1 };
+        }
+
+        [Test]
+        public void TestNonExpiredItemDegradesByOne()
+        {
+          _item.Quality = 1;
+          When_UpdateQuality();
+          Then_Quality_should_be(0);
+        }
+
+        [Test]
+        public void TestNonExpiredItemQualityCannotBeLessThanZero()
+        {
+          _item.Quality = 0;
+          When_UpdateQuality();
+          Then_Quality_should_not_be_negative();
+        }
       }
 
-      [Test]
-      public void TestNonExpiredItemDegradesByOne()
+      protected class TestExpiredItems : UpdateQualityTests
       {
-        var item = new Item { SellIn = 1, Quality = 1 };
-        When_UpdateQuality(item);
-        Then_Quality_should_be(0, item);
+        [SetUp]
+        public override void SetUp()
+        {
+          base.SetUp();
+          _item = new Item { SellIn = -1 };
+        }
+
+        [Test]
+        public void QualityCannotBeLessThanZero()
+        {
+          _item.Quality = 0;
+          When_UpdateQuality();
+          Then_Quality_should_not_be_negative();
+        }
+
+        [Test]
+        public void QualityDegradesTwiceAsFast()
+        {
+          _item.Quality = 2;
+          When_UpdateQuality();
+          Then_Quality_should_be(0);
+        }
       }
 
-      [Test]
-      public void TestNonExpiredItemQualityCannotBeLessThanZero()
+      private void Then_Quality_should_be(int expectedQuality)
       {
-        var item = new Item { SellIn = 2, Quality = 0 };
-        When_UpdateQuality(item);
-        Then_Quality_should_not_be_negative(item);
+        Assert.AreEqual(expectedQuality, _item.Quality);
       }
 
-      [Test]
-      public void TestExpiredItemQualityCannotBeLessThanZero()
+      private void Then_Quality_should_not_be_negative()
       {
-        var item = new Item { SellIn = -1, Quality = 0 };
-        When_UpdateQuality(item);
-        Then_Quality_should_not_be_negative(item);
+        Assert.IsTrue(_item.Quality >= 0);
       }
 
-      private void Then_Quality_should_be(int expectedQuality, Item item)
+      private void When_UpdateQuality()
       {
-        Assert.AreEqual(expectedQuality, item.Quality);
-      }
-
-      private void Then_Quality_should_not_be_negative(Item item)
-      {
-        Assert.IsTrue(item.Quality >= 0);
-      }
-
-      private void When_UpdateQuality(Item item)
-      {
-        var items = new List<Item> { item }; 
+        var items = new List<Item> { _item }; 
         Program.UpdateQuality(items);
       }
     }
