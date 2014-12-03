@@ -20,14 +20,32 @@ namespace GildedRose.Tests
 
     protected class UpdateQualityTests : ProgramTests
     {
+      
       [Test]
       public void TestExpiredItemDegradesTwiceAsFast()
       {
         var item = new Item { SellIn = -1, Quality = 2 };
-        var items = new List<Item> { item };
+        When_UpdateQuality(item);
+        Then_Quality_should_be(0, item);
+      }
 
+      [Test]
+      public void TestNonExpiredItemDegradesByOne()
+      {
+        var item = new Item { SellIn = 1, Quality = 1 };
+        When_UpdateQuality(item);
+        Then_Quality_should_be(0, item);
+      }
+
+      private void Then_Quality_should_be(int expectedQuality, Item item)
+      {
+        Assert.AreEqual(expectedQuality, item.Quality);
+      }
+
+      private void When_UpdateQuality(Item item)
+      {
+        var items = new List<Item> { item }; 
         Program.UpdateQuality(items);
-        Assert.AreEqual(0, item.Quality);
       }
     }
   }
