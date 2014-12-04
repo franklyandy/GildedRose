@@ -169,6 +169,24 @@ namespace GildedRose.Tests
         }
       }
 
+      protected class TestConjured : UpdateQualityTests
+      {
+        [SetUp]
+        public override void SetUp()
+        {
+          base.SetUp();
+          _item = new Item { Name = "Conjured Mana Cake", SellIn = 5 };
+        }
+
+        [Test]
+        public void QualityDegradesTwiceAsUsual()
+        {
+          _item.Quality = 10;
+          When_UpdateQuality();
+          Then_Quality_should_be(8);
+        }
+      }
+
       private void Then_Quality_should_be(int expectedQuality)
       {
         Assert.AreEqual(expectedQuality, _item.Quality);
