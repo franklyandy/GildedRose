@@ -120,6 +120,47 @@ namespace GildedRose.Tests
         }
       }
 
+      protected class TestBackstagePasses : UpdateQualityTests
+      {
+        [SetUp]
+        public override void SetUp()
+        {
+          base.SetUp();
+          _item = new Item { Name = "Backstage passes to a TAFKAL80ETC concert", Quality = 1, SellIn = 15 };
+        }
+
+        [Test]
+        public void QualityIncreases()
+        {
+          When_UpdateQuality();
+          Then_Quality_should_be(2);
+        }
+
+        [Test]
+        public void QualitySellInTenDaysIncreasesByTwo()
+        {
+          _item.SellIn = 10;
+          When_UpdateQuality();
+          Then_Quality_should_be(3);
+        }
+
+        [Test]
+        public void QualitySellInFiveDaysIncreasesByThree()
+        {
+          _item.SellIn = 5;
+          When_UpdateQuality();
+          Then_Quality_should_be(4);
+        }
+
+        [Test]
+        public void QualitySellInZeroIsZero()
+        {
+          _item.SellIn = 0;
+          When_UpdateQuality();
+          Then_Quality_should_be(0);
+        }
+      }
+
       private void Then_Quality_should_be(int expectedQuality)
       {
         Assert.AreEqual(expectedQuality, _item.Quality);
