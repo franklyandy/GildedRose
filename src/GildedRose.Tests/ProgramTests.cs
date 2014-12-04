@@ -41,24 +41,6 @@ namespace GildedRose.Tests
           When_UpdateQuality();
           Then_Quality_should_not_be_negative();
         }
-
-        [Test]
-        public void AgedBrieQualityIncreases()
-        {
-          _item.Name = "Aged Brie";
-          _item.Quality = 1;
-          When_UpdateQuality();
-          Then_Quality_should_be(2);
-        }
-
-        [Test]
-        public void AgedBrieQualityNeverExceedsFifty()
-        {
-          _item.Name = "Aged Brie";
-          _item.Quality = 50;
-          When_UpdateQuality();
-          Then_Quality_should_be(50);
-        }
       }
 
       protected class TestExpiredItems : UpdateQualityTests
@@ -87,6 +69,57 @@ namespace GildedRose.Tests
         }
       }
 
+      protected class TestBrie : UpdateQualityTests
+      {
+        [SetUp]
+        public override void SetUp()
+        {
+          base.SetUp();
+          _item = new Item { Name = "Aged Brie", SellIn = 1 };
+        }
+
+        [Test]
+        public void AgedBrieQualityIncreases()
+        {
+          _item.Quality = 1;
+          When_UpdateQuality();
+          Then_Quality_should_be(2);
+        }
+
+        [Test]
+        public void AgedBrieQualityNeverExceedsFifty()
+        {
+          _item.Quality = 50;
+          When_UpdateQuality();
+          Then_Quality_should_be(50);
+        }
+      }
+
+      protected class TestSulfuras : UpdateQualityTests
+      {
+        [SetUp]
+        public override void SetUp()
+        {
+          base.SetUp();
+          _item = new Item { Name = "Sulfuras, Hand of Ragnaros", SellIn = 1 };
+        }
+
+        [Test]
+        public void SulfurasNeverHasToBeSold()
+        {
+          When_UpdateQuality();
+          Then_SellIn_should_be(1);
+        }
+
+        [Test]
+        public void SulfurasNeverDecreasesInQuality()
+        {
+          _item.Quality = 1;
+          When_UpdateQuality();
+          Then_Quality_should_be(1);
+        }
+      }
+
       private void Then_Quality_should_be(int expectedQuality)
       {
         Assert.AreEqual(expectedQuality, _item.Quality);
@@ -97,9 +130,14 @@ namespace GildedRose.Tests
         Assert.IsTrue(_item.Quality >= 0);
       }
 
+      private void Then_SellIn_should_be(int expectedSellIn)
+      {
+        Assert.AreEqual(expectedSellIn, _item.SellIn);
+      }
+
       private void When_UpdateQuality()
       {
-        var items = new List<Item> { _item }; 
+        var items = new List<Item> { _item };
         Program.UpdateQuality(items);
       }
     }
