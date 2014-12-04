@@ -105,18 +105,26 @@ namespace GildedRose.Tests
         }
 
         [Test]
-        public void SulfurasNeverHasToBeSold()
+        public void NeverHasToBeSold()
         {
           When_UpdateQuality();
           Then_SellIn_should_be(1);
         }
 
         [Test]
-        public void SulfurasNeverDecreasesInQuality()
+        public void NeverDecreasesInQuality()
         {
           _item.Quality = 1;
           When_UpdateQuality();
           Then_Quality_should_be(1);
+        }
+
+        [Test]
+        public void QualityRemains80()
+        {
+          _item.Quality = 80;
+          When_UpdateQuality();
+          Then_Quality_should_be(80);
         }
       }
 
