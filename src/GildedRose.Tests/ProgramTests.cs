@@ -41,6 +41,24 @@ namespace GildedRose.Tests
           When_UpdateQuality();
           Then_Quality_should_not_be_negative();
         }
+
+        [Test]
+        public void AgedBrieQualityIncreases()
+        {
+          _item.Name = "Aged Brie";
+          _item.Quality = 1;
+          When_UpdateQuality();
+          Then_Quality_should_be(2);
+        }
+
+        [Test]
+        public void AgedBrieQualityNeverExceedsFifty()
+        {
+          _item.Name = "Aged Brie";
+          _item.Quality = 50;
+          When_UpdateQuality();
+          Then_Quality_should_be(50);
+        }
       }
 
       protected class TestExpiredItems : UpdateQualityTests
